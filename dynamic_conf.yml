@@ -1,0 +1,47 @@
+http:
+  middlewares:
+    whitelist:
+      ipWhiteList:
+        sourceRange:
+          - "192.168.0.0/24"
+
+  routers:
+    api:
+      rule: "Host(`127.0.0.1`)"
+      entryPoints:
+        - "websecure"
+      middlewares:
+        - whitelist
+      service: api@internal
+      tls:
+        certResolver: "letsencrypt"
+
+    giduv:
+      rule: "Host(`giduv.com`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+      service: giduv-service
+
+    test-giduv:
+      rule: "Host(`test.giduv.com`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+      service: test-giduv-service
+
+  services:
+    giduv-service:
+      loadBalancer:
+        servers:
+#          - url: "http://192.168.10.5"
+          - url: "https://1.1.1.1/"
+
+    test-giduv-service:
+      loadBalancer:
+        servers:
+#          - url: "http://192.168.10.6"
+           - url: "https://1.1.1.1/"
+

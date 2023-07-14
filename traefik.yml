@@ -1,0 +1,42 @@
+# traefik.yml
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic_conf.yml
+    watch: true
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "it@giduv.com" # переменная окружения
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        # used during the challenge
+        entryPoint: web
+#      domains:
+#        - main: giduv.com
+#          sans:
+#            - test.giduv.com
+api:
+  insecure: true
+  dashboard: true
+
+log:
+  level: ERROR # или INFO, DEBUG в зависимости от ваших потребностей
+  filePath: "/var/log/traefik/traefik.log"
+  format: common # или json
+
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  bufferingSize: 100 # количество логов, которые траефик должен буферизовать перед записью на диск
